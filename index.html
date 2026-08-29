@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Submit Complaint</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 400px; margin: 20px auto; padding: 15px; }
+        input, textarea, button { width: 100%; margin-top: 8px; margin-bottom: 15px; padding: 10px; box-sizing: border-box; }
+        button { background-color: #25D366; color: white; border: none; font-weight: bold; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <h2>Complaint Form</h2>
+    <form id="complaintForm">
+        <label>Your Name:</label>
+        <input type="text" id="name" required>
+
+        <label>Phone Number:</label>
+        <input type="text" id="phone">
+
+        <label>Department / Location:</label>
+        <input type="text" id="department">
+
+        <label>Complaint Details:</label>
+        <textarea id="issue" rows="4" required></textarea>
+
+        <button type="submit">Submit Complaint</button>
+    </form>
+
+    <p id="status"></p>
+
+    <script>
+        document.getElementById('complaintForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const status = document.getElementById('status');
+            status.innerText = "Submitting...";
+
+            const payload = {
+                name: document.getElementById('name').value,
+                phone: document.getElementById('phone').value,
+                department: document.getElementById('department').value,
+                issue: document.getElementById('issue').value
+            };
+
+            try {
+                // Change URL if hosting remote server (e.g., https://yourdomain.com/api/submit-complaint)
+                const res = await fetch('http://localhost:3000/api/submit-complaint', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                const data = await res.json();
+                if (data.success) {
+                    status.style.color = 'green';
+                    status.innerText = "Complaint submitted successfully!";
+                    document.getElementById('complaintForm').reset();
+                } else {
+                    throw new Error(data.error);
+                }
+            } catch (err) {
+                status.style.color = 'red';
+                status.innerText = "Error submitting form. Please try again.";
+            }
+        });
+    </script>
+</body>
+</html>
